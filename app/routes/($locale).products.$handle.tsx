@@ -13,6 +13,8 @@ import type {
   ProductVariantFragment,
 } from 'storefrontapi.generated';
 
+import {ShopPayButton} from '@shopify/hydrogen-react';
+
 import {
   Image,
   Money,
@@ -145,6 +147,39 @@ function ProductImage({image}: {image: ProductVariantFragment['image']}) {
   );
 }
 
+function CartLineQuantity({ line }) {
+  const [quantity, setQuantity] = useState(line.quantity);
+
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value, 10);
+    setQuantity(newQuantity);
+  };
+
+  return (
+    <div className="cart-line-quantity">
+      <CartLineUpdateButton
+        lines={[{ id: line.id, quantity }]}
+      >
+        <input
+          id={`${lineId}-quantity`}
+          name={`${lineId}-quantity`}
+          type="number"
+          value={quantity}
+          onChange={handleQuantityChange}
+          min={1}
+          max={100} // Adjust the maximum quantity allowed
+        />
+        <button
+          type="submit"
+          aria-label="Update Quantity"
+        >
+          Update
+        </button>
+      </CartLineUpdateButton>
+    </div>
+  );
+}
+
 function ProductMain({
   selectedVariant,
   product,
@@ -182,6 +217,11 @@ function ProductMain({
           )}
         </Await>
       </Suspense>
+
+      <ShopPayButton
+        variantIds={[selectedVariant?.id]}
+        storeDomain={"http://notarealshop.myshopify.com"}
+      />
       <br />
       <br />
       <p>
